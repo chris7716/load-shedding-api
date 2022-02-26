@@ -1,8 +1,11 @@
+from typing import Optional
 from fastapi import FastAPI
 from datetime import datetime
 from cassandra.cluster import Cluster
 from cassandra.cqlengine.management import sync_table
 from cassandra.cqlengine.connection import setup
+
+from router import consumption
 
 from storage import area_consumption
 from storage import area
@@ -40,3 +43,6 @@ sync_table(user.UserModel)
 async def root():
     #em1 = example.ExampleModel.create(example_type=0, description="example1", created_at=datetime.now())
     return {"message": "Hello World"}
+
+# Consumption Data Endpoint
+app.include_router(consumption.router)
