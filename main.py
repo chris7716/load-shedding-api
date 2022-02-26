@@ -6,6 +6,7 @@ from cassandra.cqlengine.management import sync_table
 from cassandra.cqlengine.connection import setup
 
 from router import consumption
+from router import customer
 
 from storage import area_consumption
 from storage import area
@@ -46,3 +47,6 @@ async def root():
 
 # Consumption Data Endpoint
 app.include_router(consumption.router)
+
+# Customer Data Endpoint
+app.include_router(customer.router)
