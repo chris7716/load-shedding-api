@@ -1,5 +1,6 @@
+from functools import lru_cache
 from typing import Optional
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI
 from datetime import datetime
 from cassandra.cluster import Cluster
 from cassandra.cqlengine.management import sync_table
@@ -7,6 +8,7 @@ from cassandra.cqlengine.connection import setup
 
 from router import consumption
 from router import customer
+from config import settings
 
 from storage import area_consumption
 from storage import area
@@ -24,7 +26,7 @@ from storage import user
 
 app = FastAPI()
 
-setup(['194.163.141.181'], "test", retry_connect=True)
+setup([settings.db_server], settings.db_cluster, retry_connect=True)
 
 sync_table(area_consumption.AreaConsumptionModel)
 sync_table(area.AreaModel)
