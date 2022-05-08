@@ -23,6 +23,7 @@ from storage import device
 from storage import load_shedding
 from storage import super_admin
 from storage import user
+from storage import temp_data
 
 app = FastAPI()
 
@@ -41,6 +42,7 @@ sync_table(device.DeviceModel)
 sync_table(load_shedding.LoadSheddingModel)
 sync_table(super_admin.SuperAdminModel)
 sync_table(user.UserModel)
+sync_table(temp_data.TempData)
 
 @app.get("/")
 async def root():
