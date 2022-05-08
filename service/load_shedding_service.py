@@ -3,12 +3,16 @@ from storage import area
 from storage import priority_level
 from storage import temp_customer
 
-def shed_load(area_id):
+def shed_load(area_id, consumptions):
+
+    max_allowed_power = sum(consumptions)
 
     priority_levels = priority_level.PriorityLevel.all()
 
     # Total power to be removed
     shedding_amount = 700
+
+    max_allowed_power -= shedding_amount 
 
     # Total number of priority levels
     number_of_priority_levels = 4
@@ -20,8 +24,6 @@ def shed_load(area_id):
 
     # A list of IDs of the houses that are going to be interrupted.
     removed_houses = []
-
-    print(priority_levels[0].level)
 
     while n > 0:
 
@@ -38,7 +40,6 @@ def shed_load(area_id):
             break
         n = n - 1
 
-    print(removed_levels)
     if shedding_amount > 0:
 
         all_households = temp_customer.TempCustomer.all()
@@ -47,8 +48,6 @@ def shed_load(area_id):
         for house in all_households:
             if house.priority == n:
                 households.append(house)
-        print(len(households))
-        print(households[0].amount)
 
         # Consumption of each household of the priority level k where
         # the total consumption of the kth priority level is less than
@@ -81,9 +80,11 @@ def shed_load(area_id):
             # Only removes the house at the started indexes
             removed_houses = [households[started_index].id]
 
+    max_allowed_power_per_user = max_allowed_power / (len(removed_levels) + len(removed_houses))
     removed_elements = {
         "removed_levels": removed_levels,
-        "removed_houses": removed_houses
+        "removed_houses": removed_houses,
+        "max_allowed_power_per_user": max_allowed_power_per_user
     }
 
     return removed_elements

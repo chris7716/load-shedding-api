@@ -44,7 +44,7 @@ async def saveTempData(ids: List[str], consumptions: List[int]):
     for i in range(0, size):
         data = temp_customer.TempCustomer(id=ids[i], amount=consumptions[i], ready=False)
         data.save()
-    return load_shedding_service.shed_load(1)
+    return load_shedding_service.shed_load(1, consumptions)
 
 @router.post("/save/priorities")
 async def savePriorities(levels: List[int], consumptions: List[int]):
