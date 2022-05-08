@@ -10,7 +10,7 @@ def shed_load(area_id, consumptions):
     priority_levels = priority_level.PriorityLevel.all()
 
     # Total power to be removed
-    shedding_amount = 1400
+    shedding_amount = 700
 
     max_allowed_power -= shedding_amount 
 
@@ -75,10 +75,10 @@ def shed_load(area_id, consumptions):
         while i != started_index:
             # Add the house hold to the removed households
             removed_houses.append(households[i].id)
-
-            shedding_amount = shedding_amount - households[i].amount
             print('====================')
             print(shedding_amount)
+
+            shedding_amount = shedding_amount - households[i].amount
 
             i = i + 1
 
