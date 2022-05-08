@@ -33,7 +33,7 @@ async def saveTempData():
     data.save()
     return {"value": 0}
 
-@router.post("/shed/status")
+@router.get("/shed/status")
 async def saveTempData():
     data = temp_data.TempData.get(data_id='536f45e3-fdda-4136-8334-b3bfe6dae370')
     return {"load_shedding": data.load_shedding}
