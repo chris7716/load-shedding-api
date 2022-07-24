@@ -2,6 +2,7 @@ from domain import area_registry
 from storage import area
 from storage import priority_level
 from storage import temp_customer
+from storage import temp_data
 
 def shed_load(area_id, consumptions):
 
@@ -10,12 +11,15 @@ def shed_load(area_id, consumptions):
     priority_levels = priority_level.PriorityLevel.all()
 
     # Total power to be removed
-    shedding_amount = 700
+    sheddings = temp_data.TempData.all()
+    shedding_amount = sheddings[0].amount
+    # maxmium_supply = get_maximum_supply()
+    # shedding_amount = power_consumptions - maxmium_supply
 
     max_allowed_power -= shedding_amount 
 
     # Total number of priority levels
-    number_of_priority_levels = 4
+    number_of_priority_levels = len(priority_levels)
 
     n = number_of_priority_levels
 
@@ -24,6 +28,7 @@ def shed_load(area_id, consumptions):
 
     # A list of IDs of the houses that are going to be interrupted.
     removed_houses = []
+    consumptions_of_removed_houses = []
 
     while n > 0:
 
@@ -53,38 +58,43 @@ def shed_load(area_id, consumptions):
         # the total consumption of the kth priority level is less than
         # the shedding amount
         consumptions_of_huseholds = []
-        households.sort(key=lambda x: x.amount, reverse=True)
+        households.sort(key=lambda x: x.amount, reverse=False)
 
         total_households = len(households)
 
         i = total_households
-        k = 1
         started_index = 0
 
-        while households[i - 1].amount > shedding_amount:
+        while households[i - 1].amount >= shedding_amount:
             i = i - 1
+            if i == 1:
+                break
 
         started_index = i - 1
+        removed_houses.append(households[started_index].id)
+        consumptions_of_removed_houses.append(households[started_index].amount)
+        shedding_amount -= households[started_index].amount
 
         i = 0
-
-    
-        print('==========STARTED==========')
-        print(started_index)
 
         while i != started_index:
             # Add the house hold to the removed households
             removed_houses.append(households[i].id)
-            print('====================')
-            print(shedding_amount)
+            consumptions_of_removed_houses.append(households[i].amount)
 
             shedding_amount = shedding_amount - households[i].amount
+            if shedding_amount <= 0:
+                if len(households) > started_index + 1:
+                    if sum(consumptions_of_removed_houses) > households[started_index + 1].amount:
+                        removed_houses = [households[started_index + 1].id]
+                break
 
             i = i + 1
 
         if shedding_amount > 0:
             # Only removes the house at the started indexes
-            removed_houses = [households[started_index].id]
+            removed_houses = [households[started_index + 1].id]
+            max_allowed_power -= households[started_index].amount  # REMOVE
 
     max_allowed_power_per_user = max_allowed_power / (len(removed_levels) + len(removed_houses))
     removed_elements = {
